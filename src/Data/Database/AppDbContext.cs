@@ -1,0 +1,22 @@
+﻿using Comaagora_API.Entities;
+using Comaagora_API.Services.Entities;
+using Microsoft.EntityFrameworkCore;
+
+namespace Comaagora_API.Data.Database;
+
+public class AppDbContext : DbContext
+{
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+
+    public DbSet<ProdutoEntity> Produtos { get; set; } = null!;
+    public DbSet<ProdutoCategoriaEntity> ProdutoCategorias { get; set; } = null!;
+    public DbSet<EstabelecimentosEntity> Estabelecimentos { get; set; } = null!;
+    public DbSet<EnderecoEntity> Enderecos { get; set; } = null!;
+    public DbSet<StatusEntity> Status { get; set; } = null!;
+    public DbSet<PedidoEntity> Pedidos { get; set; } = null!;
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+    }
+}

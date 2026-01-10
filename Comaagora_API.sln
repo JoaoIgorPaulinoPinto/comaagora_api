@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36518.9
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Comaagora_API", "Comaagora_API.csproj", "{0F9A6CE6-219C-4678-9B44-E00A2CAC6DDF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Comaagora_API.Tests", "..\Comaagora_API.Tests\Comaagora_API.Tests.csproj", "{7669696E-C109-455C-8195-0CC9D2D82621}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0F9A6CE6-219C-4678-9B44-E00A2CAC6DDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F9A6CE6-219C-4678-9B44-E00A2CAC6DDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F9A6CE6-219C-4678-9B44-E00A2CAC6DDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F9A6CE6-219C-4678-9B44-E00A2CAC6DDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7669696E-C109-455C-8195-0CC9D2D82621}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7669696E-C109-455C-8195-0CC9D2D82621}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7669696E-C109-455C-8195-0CC9D2D82621}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7669696E-C109-455C-8195-0CC9D2D82621}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {889EBCC4-9E7D-4304-8961-D50E22049933}
+	EndGlobalSection
+EndGlobal
