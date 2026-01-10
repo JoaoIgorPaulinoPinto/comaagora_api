@@ -11,7 +11,6 @@ public partial class ProdutoPedidoEntity : BaseEntity
     [Key]
     public int Id { get; set; }
 
-    [Required]
     public int EstabelecimentoId { get; set; }
 
     [Required]

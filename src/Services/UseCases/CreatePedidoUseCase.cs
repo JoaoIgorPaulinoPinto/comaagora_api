@@ -29,8 +29,8 @@ public class CreatePedidoUseCase : ICreatePedidoUseCase
         if (estabelecimentoId == null) return false;
 
         var pedido = PedidoMapper.CreatePedidoDtoToEntity(pedidoDto, estabelecimentoId.Value);
-        var pedidoProdutos = "a";
-        return await _pedidoRepository.CreatePedido(pedido);
-        var endereco = "a"; // criar endereco e atribuir ao usuario o Id do pedido
+
+        await _pedidoRepository.CreatePedido(pedido);
+
     }
 }

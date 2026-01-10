@@ -9,6 +9,7 @@ public class AppDbContext : DbContext
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
     public DbSet<ProdutoEntity> Produtos { get; set; } = null!;
+    public DbSet<ProdutoPedidoEntity> ProdutosPedido { get; set; } = null!;
     public DbSet<ProdutoCategoriaEntity> ProdutoCategorias { get; set; } = null!;
     public DbSet<EstabelecimentosEntity> Estabelecimentos { get; set; } = null!;
     public DbSet<EnderecoEntity> Enderecos { get; set; } = null!;
