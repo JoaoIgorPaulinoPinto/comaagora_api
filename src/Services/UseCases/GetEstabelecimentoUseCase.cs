@@ -12,7 +12,7 @@ public class GetEstabelecimentoUseCase : IGetEstabelecimentoUseCase
     {
         _repository = repo;
     }
-    public Task<GetEstabelecimentoDTO?> GetEstabelecimentoData(string estabelecimentoSlug)
+    public Task<GetEstabelecimentoDTO?> Execute(string estabelecimentoSlug)
     {
        return _repository.GetEstabelecimentoData(estabelecimentoSlug);
     }

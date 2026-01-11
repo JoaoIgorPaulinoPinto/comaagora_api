@@ -36,9 +36,16 @@ public class EnderecoRepository : IEnderecoRepository
 
     public bool CreateEndereco(CreateEnderecoDTO endereco)
     {
-        var entityEnedereco = EnderecoMapper.CreateEnderecoDto_To_EnderecoEntity(endereco);
-        _context.Enderecos.Add(entityEnedereco);
-        _context.SaveChanges();
-        return true;
+        try
+        {
+            var entityEnedereco = EnderecoMapper.CreateEnderecoDto_To_EnderecoEntity(endereco);
+            _context.Enderecos.Add(entityEnedereco);
+            _context.SaveChanges();
+            return true;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
     }
 }

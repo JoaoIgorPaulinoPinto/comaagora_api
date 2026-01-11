@@ -5,7 +5,7 @@ using Comaagora_API.src.Services.Entities;
 
 namespace Comaagora_API.Entities;
 
-[Table("ProdutosPedidos")]
+[Table("ProdutoPedidos")]
 public partial class ProdutoPedidoEntity : BaseEntity
 {
     [Key]

@@ -22,7 +22,7 @@ public class EstabelecimentoController:ControllerBase
         {   
             return BadRequest("o slug do estabelecimento é necessário");
         }
-        var result = await _getEstabelecimentoUseCaseUseCase.GetEstabelecimentoData(estabelecimentoSlug);
+        var result = await _getEstabelecimentoUseCaseUseCase.Execute(estabelecimentoSlug);
         if (result == null)
         {
             throw new Exception("Nenhum estabelecimento foi encontrado.");

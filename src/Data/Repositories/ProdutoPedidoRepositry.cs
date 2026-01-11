@@ -14,20 +14,23 @@ public class ProdutoPedidoRepositry :IProdutoPedidoRepository
         _context = context;
     }
     
-    public async Task<ProdutoPedidoEntity> CreateProdutoPedido(
-        CreateProdutoPedidoDTO item, 
+    public Task CreateProdutoPedido(
+        List<CreateProdutoPedidoDTO> items, 
         int pedidoId,
         int estabelecimentoId)
     {
-        var entidade = new ProdutoPedidoEntity()
+        foreach (var item in items)
         {
-            EstabelecimentoId = estabelecimentoId,
-            PedidoId = pedidoId,
-            ProdutoId = item.ProdutoId,
-            Quantidade = item.Quantidade,
-        };
-         _context.ProdutosPedido.Add(entidade);
+            var entidade = new ProdutoPedidoEntity()
+            {
+                EstabelecimentoId = estabelecimentoId,
+                PedidoId = pedidoId,
+                ProdutoId = item.ProdutoId,
+                Quantidade = item.Quantidade,
+            };
+            _context.ProdutosPedido.Add(entidade);
+        }
          _context.SaveChanges();
-         return entidade;
+         return Task.CompletedTask;
     }
 }

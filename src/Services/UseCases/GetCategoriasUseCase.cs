@@ -7,15 +7,15 @@ namespace Comaagora_API.src.Services.UseCases;
 public class GetCategoriasUseCase : IGetCategoriasUseCase
 {
     
-    private readonly IProdutoCategoriaRepository _repo;
+    private readonly IProdutoCategoriaRepository _repository;
 
-    public GetCategoriasUseCase(IProdutoCategoriaRepository repo)
+    public GetCategoriasUseCase(IProdutoCategoriaRepository repository)
     {
-        _repo = repo;
+        _repository = repository;
     }
     
-    public async Task<List<GetCategoriaProdutoDTO>> GetCategoriasAsync(string estabelecimentoSlug)
+    public async Task<List<GetCategoriaProdutoDTO>> Execute(string estabelecimentoSlug)
     {
-       return (await _repo.GetCategoriasAsync(estabelecimentoSlug));
+       return (await _repository.GetCategoriasAsync(estabelecimentoSlug));
     }
 }

@@ -1,3 +1,4 @@
+using Comaagora_API.Data;
 using Comaagora_API.Data.Database;
 using Comaagora_API.Data.Interfaces;
 using Comaagora_API.Data.Repositories;
@@ -18,12 +19,21 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<IGetProdutosUseCase, GetProdutosUseCase>();
 builder.Services.AddScoped<IGetEstabelecimentoUseCase, GetEstabelecimentoUseCase>();
 builder.Services.AddScoped<IGetCategoriasUseCase, GetCategoriasUseCase>();
+builder.Services.AddScoped<ICreateProdutoPedido, CreateProdutoPedidoUseCase>();
+builder.Services.AddScoped<ICreateEnderecoUseCase, CreateEnderecoUseCase>();
+builder.Services.AddScoped<ICreatePedidoUseCase, CreatePedidoUseCase>();
+builder.Services.AddScoped<IGetEstabelecimentoIdUseCase, GetEstabeleicmentoIdUseCase>();
 
 // Repositories
-builder.Services.AddScoped<IProdutosRepository, ProdutosRepository>();
+builder.Services.AddScoped<IEnderecoRepository, EnderecoRepository>();
 builder.Services.AddScoped<IEstabelecimentoRepository, EstabelecimentoRepository>();
+builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
 builder.Services.AddScoped<IProdutoCategoriaRepository, ProdutoCategoriaRepository>();
+builder.Services.AddScoped<IProdutoPedidoRepository, ProdutoPedidoRepositry>();
+builder.Services.AddScoped<IProdutosRepository, ProdutosRepository>();
 
+//  Helpers
+builder.Services.AddScoped<IDbTransactionHelper, DbTransactionsHelper>();
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

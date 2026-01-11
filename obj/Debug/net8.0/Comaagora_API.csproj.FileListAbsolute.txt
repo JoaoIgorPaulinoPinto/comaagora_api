@@ -302,3 +302,4 @@ C:\Users\Joao\source\repos\comaagora_api_sln\Comaagora_API\obj\Debug\net8.0\Coma
 C:\Users\Joao\source\repos\comaagora_api_sln\Comaagora_API\obj\Debug\net8.0\Comaagora_API.genruntimeconfig.cache
 C:\Users\Joao\source\repos\comaagora_api_sln\Comaagora_API\obj\Debug\net8.0\ref\Comaagora_API.dll
 C:\Users\Joao\source\repos\Comaagora_API_sln\Comaagora_API\bin\Debug\net8.0\FluentAssertions.dll
+C:\Users\Joao\source\repos\comaagora_api_sln\Comaagora_API\obj\Debug\net8.0\Comaagora_API.sourcelink.json

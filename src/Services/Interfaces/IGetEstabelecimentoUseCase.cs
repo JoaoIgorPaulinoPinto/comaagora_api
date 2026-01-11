@@ -4,7 +4,7 @@ namespace Comaagora_API.Services.Interfaces
 {
     public interface IGetEstabelecimentoUseCase
     {
-        public Task<GetEstabelecimentoDTO?> GetEstabelecimentoData(string estabelecimentoSlug);
+        public Task<GetEstabelecimentoDTO> Execute(string estabelecimentoSlug);
     }
 }
 

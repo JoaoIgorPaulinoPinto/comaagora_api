@@ -4,5 +4,5 @@ namespace Comaagora_API.src.Services.Interfaces;
 
 public interface IGetCategoriasUseCase
 {
-    public Task<List<GetCategoriaProdutoDTO>> GetCategoriasAsync(string estabelecimentoSlug);
+    public Task<List<GetCategoriaProdutoDTO>> Execute(string estabelecimentoSlug);
 }

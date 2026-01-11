@@ -5,5 +5,5 @@ namespace Comaagora_API.Data.Interfaces;
 
 public interface IProdutoPedidoRepository
 {
-    public Task<ProdutoPedidoEntity> CreateProdutoPedido(CreateProdutoPedidoDTO item, int pedidoId, int estabelecimentoId);
+    public Task CreateProdutoPedido(List<CreateProdutoPedidoDTO> items, int pedidoId, int estabelecimentoId);
 }

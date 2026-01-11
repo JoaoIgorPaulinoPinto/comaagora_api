@@ -24,7 +24,7 @@ public class CategoriaController : ControllerBase
             return BadRequest("Establishment slug is required.");
         }
 
-        var result = await _getCategoriasUseCase.GetCategoriasAsync(estabelecimentoSlug);
+        var result = await _getCategoriasUseCase.Execute(estabelecimentoSlug);
         
          if (result.IsNullOrEmpty())
          {

@@ -8,14 +8,14 @@ namespace Comaagora_API.src.Services.UseCases
     internal sealed class GetProdutosUseCase : IGetProdutosUseCase
     {
 
-        private readonly IProdutosRepository _produtosRepository;
-        public GetProdutosUseCase (IProdutosRepository produtosRepository) { 
-        _produtosRepository  = produtosRepository;    
+        private readonly IProdutosRepository _repository;
+        public GetProdutosUseCase (IProdutosRepository repository) { 
+        _repository  = repository;    
         }
 
-        public async Task<List<GetProdutoDTO>> GetProdutosAsync(string estabelecimentoSlug)
+        public async Task<List<GetProdutoDTO>> Execute(string estabelecimentoSlug)
         {
-            return await _produtosRepository.GetProdutosAsync(estabelecimentoSlug);
+            return await _repository.GetProdutosAsync(estabelecimentoSlug);
         }
     }
 }

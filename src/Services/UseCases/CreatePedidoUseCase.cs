@@ -1,58 +1,70 @@
-using System.Diagnostics.CodeAnalysis;
 using Comaagora_API.Application.Mappers;
 using Comaagora_API.Data;
-using Comaagora_API.Data.Database;
 using Comaagora_API.Data.Interfaces;
 using Comaagora_API.Services.Interfaces;
 using Comaagora_API.src.Application.DTOs;
 
-namespace Comaagora_API.Services.UseCases;
-
 public class CreatePedidoUseCase : ICreatePedidoUseCase
 {
-    private readonly DbTransactionsHelper _dbTransactionsHelper;
-    private readonly IPedidoRepository _pedidoRepository;
-    private readonly IGetEstabelecimentoId _getEstabelecimentoId;
+    private readonly IDbTransactionHelper _dbTransactionsHelper; // Usar Interface
+    private readonly IPedidoRepository _repository;
+    private readonly IGetEstabelecimentoIdUseCase _getEstabelecimentoIdUseCase;
     private readonly ICreateEnderecoUseCase _createEnderecoUseCase;
-  
-    private ICreatePedidoUseCase _createPedidoUseCase;
+    private readonly ICreateProdutoPedido _createProdutoPedido;
 
-    public CreatePedidoUseCase(DbTransactionsHelper transactionsHelper,ICreateEnderecoUseCase  createEnderecoUseCase, IGetEstabelecimentoId getEstabelecimentoId, IPedidoRepository pedidoRepository)
+    public CreatePedidoUseCase(
+        ICreateProdutoPedido createProdutoPedido, 
+        IDbTransactionHelper transactionsHelper, // Interface aqui
+        ICreateEnderecoUseCase createEnderecoUseCase, 
+        IGetEstabelecimentoIdUseCase getEstabelecimentoIdUseCase, 
+        IPedidoRepository repository)
     {
+        _createProdutoPedido = createProdutoPedido;
         _dbTransactionsHelper = transactionsHelper;
         _createEnderecoUseCase = createEnderecoUseCase;
-        _pedidoRepository = pedidoRepository;
-        _getEstabelecimentoId = getEstabelecimentoId;
+        _repository = repository;
+        _getEstabelecimentoIdUseCase = getEstabelecimentoIdUseCase;
     }
 
-    public async Task<bool> CreatePedido(string estabelecimentoSlug, CreatePedidoDTO pedidoDto)
+    public async Task<bool> Execute(string estabelecimentoSlug, CreatePedidoDTO pedidoDto)
     {
-        
-        //inicia a transação
         await _dbTransactionsHelper.BeginTransactionAsync();
-        //pega o id do estabelecimento
-        var estabelecimentoId = await _getEstabelecimentoId.GetEstabelecimentoId(estabelecimentoSlug);
-        if (estabelecimentoId == null)
+
+        try
+        {
+            // 1. Validar Estabelecimento
+            var estabelecimentoId = await _getEstabelecimentoIdUseCase.Execute(estabelecimentoSlug);
             if (estabelecimentoId == null)
             {
                 await _dbTransactionsHelper.RollbackTransactionAsync();
                 return false;
             }
-        
-        //cria o pedido base
-        var pedido = PedidoMapper.CreatePedidoDto_To_PedidoEntity(pedidoDto, estabelecimentoId.Value);
-        var pedidoCadastradoId = await _pedidoRepository.CreatePedido(pedido);
-        if (pedidoCadastradoId == null)
+
+            // 2. Criar Pedido Base
+            var pedido = PedidoMapper.CreatePedidoDto_To_PedidoEntity(pedidoDto, estabelecimentoId.Value);
+            var pedidoCadastradoId = await _repository.CreatePedido(pedido);
+            
+            if (pedidoCadastradoId == null)
+            {
+                await _dbTransactionsHelper.RollbackTransactionAsync();
+                return false;
+            }
+
+            // 3. Adicionar Endereço e Itens (IMPORTANTE: Adicionado await)
+            CreateEnderecoDTO endereco = pedidoDto.Endereco;
+            // Nota: Verifique se aqui não deveria ser o ID do Pedido ou ID do Usuário
+            await _createEnderecoUseCase.Execute(endereco, (int)pedidoCadastradoId);
+            await _createProdutoPedido.Execute(pedidoDto.ProdutoPedidos, (int)pedidoCadastradoId, (int)estabelecimentoId);
+
+            // 4. Sucesso total
+            await _dbTransactionsHelper.CommitTransactionAsync();
+            return true; // Retornar true em caso de sucesso
+        }
+        catch (Exception)
         {
             await _dbTransactionsHelper.RollbackTransactionAsync();
+            // Logar o erro aqui (ex: ILogger)
             return false;
         }
-        else
-        {
-            //adiciona o endereco ao pedido
-            CreateEnderecoDTO endereco = pedidoDto.Endereco;
-            _createEnderecoUseCase.Execute(endereco, (int)pedidoCadastradoId);
-            
-        }
-    };
+    }
 }

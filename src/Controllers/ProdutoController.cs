@@ -22,7 +22,7 @@ namespace Comaagora_API.src.Controllers
             if (string.IsNullOrWhiteSpace(estabelecimentoSlug))
                 return BadRequest("O slug do estabelecimento é obrigatório.");
 
-            var produtos = await _getProdutosUseCase.GetProdutosAsync(estabelecimentoSlug);
+            var produtos = await _getProdutosUseCase.Execute(estabelecimentoSlug);
 
             if (produtos == null || produtos.Count == 0)
                 return NotFound("Nenhum produto encontrado para este estabelecimento.");
