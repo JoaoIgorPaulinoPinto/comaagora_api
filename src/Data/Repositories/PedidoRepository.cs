@@ -16,10 +16,18 @@ public  class PedidoRepository : IPedidoRepository
         _context = context;
     }
 
-    public async Task<bool> CreatePedido(PedidoEntity pedido)
+    public async Task<int?> CreatePedido(PedidoEntity pedido)
     {
-        await _context.Pedidos.AddAsync(pedido);
-        _context.SaveChanges();
-        return true;
+        try
+        {
+            await _context.Pedidos.AddAsync(pedido);
+            await _context.SaveChangesAsync();
+            return pedido.Id;
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+
     }
 }

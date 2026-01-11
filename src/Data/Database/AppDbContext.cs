@@ -1,6 +1,8 @@
-﻿using Comaagora_API.Entities;
+﻿using System.Data.Common;
+using Comaagora_API.Entities;
 using Comaagora_API.Services.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Comaagora_API.Data.Database;
 
@@ -18,6 +20,7 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
     }
+
+
 }

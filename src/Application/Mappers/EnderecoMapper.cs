@@ -4,7 +4,7 @@ namespace Comaagora_API.Application.Mappers;
 
 public class EnderecoMapper
 {
-    public static EnderecoEntity CreateEnderecoDtoToEntity(CreateEnderecoDTO enderecoDTO)
+    public static EnderecoEntity CreateEnderecoDto_To_EnderecoEntity(CreateEnderecoDTO enderecoDTO)
     {
         var entityEnedereco = new EnderecoEntity(
             enderecoDTO.UsuarioId,
@@ -20,7 +20,7 @@ public class EnderecoMapper
         return  entityEnedereco;
     }
 
-    public static GetEnderecoDTO EntityToGetEnderecoDto(EnderecoEntity endereco)
+    public static GetEnderecoDTO EnderecoEntity_To_GetEnderecoDto(EnderecoEntity endereco)
     {
         var dtoEndereco = new GetEnderecoDTO {  
             Rua = endereco.Rua,

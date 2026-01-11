@@ -33,8 +33,4 @@
     <Folder Include="src\Application\Utils\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <EditorConfigFiles Include=".editorconfig" />
-  </ItemGroup>
-
 </Project>

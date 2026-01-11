@@ -5,7 +5,7 @@ namespace Comaagora_API.Application.Mappers;
 
 public class PedidoMapper
 {
-    public static GetPedidoDTO EntityToGetPedidoDto(PedidoEntity pedido)
+    public static GetPedidoDTO PedidoEntity_To_GetPedidoDto(PedidoEntity pedido)
     {
         var dto = new GetPedidoDTO()
         {
@@ -18,7 +18,7 @@ public class PedidoMapper
         };
         return dto;
     }
-    public static PedidoEntity CreatePedidoDtoToEntity(CreatePedidoDTO dto, int estabelecimentoId)
+    public static PedidoEntity CreatePedidoDto_To_PedidoEntity(CreatePedidoDTO dto, int estabelecimentoId)
     {
         var pedido = new PedidoEntity()
         {

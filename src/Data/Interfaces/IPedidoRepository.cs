@@ -5,5 +5,5 @@ namespace Comaagora_API.Data.Interfaces;
 
 public interface IPedidoRepository
 {
-    public Task<bool> CreatePedido(PedidoEntity pedido);
+    public Task<int?> CreatePedido(PedidoEntity pedido);
 }
