@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Comaagora_API.Services.UseCases;
 
-public class CreateProdutoPedidoUseCase : ICreateProdutoPedido
+public class CreateProdutoPedidoUseCase : ICreateProdutoPedidoUseCase
 {
     private readonly IProdutoPedidoRepository _repository;
 
@@ -15,6 +15,17 @@ public class CreateProdutoPedidoUseCase : ICreateProdutoPedido
     }
     public Task Execute(List<CreateProdutoPedidoDTO> produtoPedidoDto, int pedidoId, int estabelecimentoId)
     {
-        return _repository.CreateProdutoPedido(produtoPedidoDto, pedidoId, estabelecimentoId);
+        if (produtoPedidoDto == null || produtoPedidoDto.Count == 0 || pedidoId == null || estabelecimentoId == null)
+        {
+            return Task.FromException(new Exception("401 BadRequest"));
+        }
+        try
+        {
+            return _repository.CreateProdutoPedido(produtoPedidoDto, pedidoId, estabelecimentoId);
+        }
+        catch
+        {
+            throw new Exception("Não foi possivel criar item do pedido");
+        }
     }
 }

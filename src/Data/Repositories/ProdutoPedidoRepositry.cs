@@ -19,18 +19,26 @@ public class ProdutoPedidoRepositry :IProdutoPedidoRepository
         int pedidoId,
         int estabelecimentoId)
     {
-        foreach (var item in items)
+        try
         {
-            var entidade = new ProdutoPedidoEntity()
+            foreach (var item in items)
             {
-                EstabelecimentoId = estabelecimentoId,
-                PedidoId = pedidoId,
-                ProdutoId = item.ProdutoId,
-                Quantidade = item.Quantidade,
-            };
-            _context.ProdutosPedido.Add(entidade);
+                var entidade = new ProdutoPedidoEntity()
+                {
+                    EstabelecimentoId = estabelecimentoId,
+                    PedidoId = pedidoId,
+                    ProdutoId = item.ProdutoId,
+                    Quantidade = item.Quantidade,
+                };
+                _context.ProdutosPedido.Add(entidade);
+            }
+
+            _context.SaveChanges();
+            return Task.CompletedTask;
         }
-         _context.SaveChanges();
-         return Task.CompletedTask;
+        catch {
+            return null;
+        }
+       
     }
 }

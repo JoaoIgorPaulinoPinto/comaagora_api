@@ -22,15 +22,10 @@ public class PedidoController : ControllerBase
         {
             var resultado = await _createPedidoUseCase.Execute(estabelecimentoSlug, pedido);
 
-            return Ok(new
-            {
-                mensagem = "Deu certo",
-                dados = resultado
-            });
+            return Ok(resultado);
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
             throw new Exception("Erro interno do servidor");
         }
     }

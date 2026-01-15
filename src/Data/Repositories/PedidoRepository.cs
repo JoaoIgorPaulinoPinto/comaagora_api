@@ -26,6 +26,7 @@ public  class PedidoRepository : IPedidoRepository
         }
         catch (Exception e)
         {
+            throw new Exception(message: "Erro ao salvar!");
             return null;
         }
 

@@ -12,9 +12,16 @@ public class CreateEnderecoUseCase : ICreateEnderecoUseCase
     {
         _repository= repository;
     }
-    public Task<GetEnderecoDTO?> Execute(CreateEnderecoDTO endereco, int pedidoId)
+    public Task<bool> Execute(CreateEnderecoDTO endereco, int pedidoId)
     {
-        _repository.CreateEndereco(endereco);
-        return Task.FromResult<GetEnderecoDTO?>(null);
+        try
+        {
+            _repository.CreateEndereco(endereco, pedidoId);
+            return Task.FromResult(true);
+        }
+        catch (Exception e)
+        {
+            throw new Exception("Erro ao salvar ");
+        }
     }
 }

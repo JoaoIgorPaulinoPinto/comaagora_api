@@ -34,17 +34,18 @@ public class EnderecoRepository : IEnderecoRepository
         return endereco; // já pode ser null
     }
 
-    public bool CreateEndereco(CreateEnderecoDTO endereco)
+    public bool CreateEndereco(CreateEnderecoDTO endereco, int pedidoId)
     {
         try
         {
-            var entityEnedereco = EnderecoMapper.CreateEnderecoDto_To_EnderecoEntity(endereco);
+            var entityEnedereco = EnderecoMapper.CreateEnderecoDto_To_EnderecoEntity(endereco, pedidoId);
             _context.Enderecos.Add(entityEnedereco);
             _context.SaveChanges();
             return true;
         }
         catch (Exception e)
         {
+            throw new Exception(message: "Erro ao salvar!");
             return false;
         }
     }

@@ -4,11 +4,11 @@ namespace Comaagora_API.Application.Mappers;
 
 public class EnderecoMapper
 {
-    public static EnderecoEntity CreateEnderecoDto_To_EnderecoEntity(CreateEnderecoDTO enderecoDTO)
+    public static EnderecoEntity CreateEnderecoDto_To_EnderecoEntity(CreateEnderecoDTO enderecoDTO, int pedidoId)
     {
         var entityEnedereco = new EnderecoEntity(
-            enderecoDTO.UsuarioId,
-            1,
+            pedidoId,
+            1, // tipo usuario cliente
             enderecoDTO.Cep,
             enderecoDTO.UfId,
             enderecoDTO.CidadeId,

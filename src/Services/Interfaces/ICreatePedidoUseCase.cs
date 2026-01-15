@@ -4,5 +4,5 @@ namespace Comaagora_API.Services.Interfaces;
 
 public interface ICreatePedidoUseCase
 {
-    public Task<bool> Execute(string estabelecimentoSlug, CreatePedidoDTO pedidoDto);
+    public Task<int?> Execute(string estabelecimentoSlug, CreatePedidoDTO pedidoDto);
 }

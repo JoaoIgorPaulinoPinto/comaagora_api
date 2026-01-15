@@ -8,4 +8,14 @@ public class CreatePedidoDTO
     public List<CreateProdutoPedidoDTO> ProdutoPedidos { get; set; }
     public string Observacao { get; set; }
     public CreateEnderecoDTO Endereco { get; set; }
+
+    public CreatePedidoDTO(string nomeCliente, string telefoneCliente, int metodoPagamento,  List<CreateProdutoPedidoDTO> produtoPedidos, string observacao, CreateEnderecoDTO endereco)
+    {
+        NomeCliente = nomeCliente;
+        TelefoneCliente = telefoneCliente;
+        MetodoPagamento = metodoPagamento;
+        ProdutoPedidos = produtoPedidos;
+        Observacao = observacao;
+        Endereco = endereco;
+    }
 }                          

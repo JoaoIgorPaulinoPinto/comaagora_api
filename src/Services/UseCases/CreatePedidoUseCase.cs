@@ -10,23 +10,23 @@ public class CreatePedidoUseCase : ICreatePedidoUseCase
     private readonly IPedidoRepository _repository;
     private readonly IGetEstabelecimentoIdUseCase _getEstabelecimentoIdUseCase;
     private readonly ICreateEnderecoUseCase _createEnderecoUseCase;
-    private readonly ICreateProdutoPedido _createProdutoPedido;
+    private readonly ICreateProdutoPedidoUseCase _createProdutoPedidoUseCase;
 
     public CreatePedidoUseCase(
-        ICreateProdutoPedido createProdutoPedido, 
+        ICreateProdutoPedidoUseCase createProdutoPedidoUseCase, 
         IDbTransactionHelper transactionsHelper, // Interface aqui
         ICreateEnderecoUseCase createEnderecoUseCase, 
         IGetEstabelecimentoIdUseCase getEstabelecimentoIdUseCase, 
         IPedidoRepository repository)
     {
-        _createProdutoPedido = createProdutoPedido;
+        _createProdutoPedidoUseCase = createProdutoPedidoUseCase;
         _dbTransactionsHelper = transactionsHelper;
         _createEnderecoUseCase = createEnderecoUseCase;
         _repository = repository;
         _getEstabelecimentoIdUseCase = getEstabelecimentoIdUseCase;
     }
 
-    public async Task<bool> Execute(string estabelecimentoSlug, CreatePedidoDTO pedidoDto)
+    public async Task<int?> Execute(string estabelecimentoSlug, CreatePedidoDTO pedidoDto)
     {
         await _dbTransactionsHelper.BeginTransactionAsync();
 
@@ -37,7 +37,8 @@ public class CreatePedidoUseCase : ICreatePedidoUseCase
             if (estabelecimentoId == null)
             {
                 await _dbTransactionsHelper.RollbackTransactionAsync();
-                return false;
+                throw new Exception(message: "Erro ao salvar!");
+                return null;
             }
 
             // 2. Criar Pedido Base
@@ -47,24 +48,26 @@ public class CreatePedidoUseCase : ICreatePedidoUseCase
             if (pedidoCadastradoId == null)
             {
                 await _dbTransactionsHelper.RollbackTransactionAsync();
-                return false;
+                throw new Exception(message: "Erro ao salvar!");
+                return null;
             }
 
             // 3. Adicionar Endereço e Itens (IMPORTANTE: Adicionado await)
             CreateEnderecoDTO endereco = pedidoDto.Endereco;
             // Nota: Verifique se aqui não deveria ser o ID do Pedido ou ID do Usuário
             await _createEnderecoUseCase.Execute(endereco, (int)pedidoCadastradoId);
-            await _createProdutoPedido.Execute(pedidoDto.ProdutoPedidos, (int)pedidoCadastradoId, (int)estabelecimentoId);
+            await _createProdutoPedidoUseCase.Execute(pedidoDto.ProdutoPedidos, (int)pedidoCadastradoId, (int)estabelecimentoId);
 
             // 4. Sucesso total
             await _dbTransactionsHelper.CommitTransactionAsync();
-            return true; // Retornar true em caso de sucesso
+            return pedido.Id; 
         }
         catch (Exception)
         {
             await _dbTransactionsHelper.RollbackTransactionAsync();
+                throw new Exception(message: "Erro ao salvar!");
             // Logar o erro aqui (ex: ILogger)
-            return false;
+            return null;
         }
     }
 }

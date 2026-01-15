@@ -19,7 +19,7 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<IGetProdutosUseCase, GetProdutosUseCase>();
 builder.Services.AddScoped<IGetEstabelecimentoUseCase, GetEstabelecimentoUseCase>();
 builder.Services.AddScoped<IGetCategoriasUseCase, GetCategoriasUseCase>();
-builder.Services.AddScoped<ICreateProdutoPedido, CreateProdutoPedidoUseCase>();
+builder.Services.AddScoped<ICreateProdutoPedidoUseCase, CreateProdutoPedidoUseCase>();
 builder.Services.AddScoped<ICreateEnderecoUseCase, CreateEnderecoUseCase>();
 builder.Services.AddScoped<ICreatePedidoUseCase, CreatePedidoUseCase>();
 builder.Services.AddScoped<IGetEstabelecimentoIdUseCase, GetEstabeleicmentoIdUseCase>();

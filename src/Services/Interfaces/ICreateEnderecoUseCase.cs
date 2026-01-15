@@ -4,5 +4,5 @@ namespace Comaagora_API.Services.Interfaces;
 
 public interface ICreateEnderecoUseCase
 {
-      public Task<GetEnderecoDTO?> Execute(CreateEnderecoDTO endereco, int pedidoId);
+      public Task<bool> Execute(CreateEnderecoDTO endereco, int pedidoId);
 }
