@@ -31,7 +31,7 @@ public class CreatePedidoUseCase : ICreatePedidoUseCase
         _getEstabelecimentoIdUseCase = getEstabelecimentoIdUseCase;
     }
 
-    public async Task<Token?> Execute(string estabelecimentoSlug, CreatePedidoDTO pedidoDto)
+    public async Task<string> Execute(string estabelecimentoSlug, CreatePedidoDTO pedidoDto)
     {
         await _dbTransactionsHelper.BeginTransactionAsync();
 
@@ -39,49 +39,42 @@ public class CreatePedidoUseCase : ICreatePedidoUseCase
         {
             var estabelecimentoId = await _getEstabelecimentoIdUseCase.Execute(estabelecimentoSlug);
             if (estabelecimentoId == null)
-            {
-                await _dbTransactionsHelper.RollbackTransactionAsync();
-                throw new Exception(message: "Erro ao salvar!");
-                return null;
-            }
+                throw new Exception("Estabelecimento não encontrado");
 
-            // 2. Criar Pedido Base
             var pedido = PedidoMapper.CreatePedidoDto_To_PedidoEntity(pedidoDto, estabelecimentoId.Value);
             var pedidoCadastradoId = await _repository.CreatePedido(pedido);
-            
             if (pedidoCadastradoId == null)
-            {
-                await _dbTransactionsHelper.RollbackTransactionAsync();
-                throw new Exception(message: "Erro ao salvar!");
-                return null;
-            }
+                throw new Exception("Erro ao criar pedido");
 
-            CreateEnderecoDTO endereco = pedidoDto.Endereco;
-            // Nota: Verifique se aqui não deveria ser o ID do Pedido ou ID do Usuário
-            await _createEnderecoUseCase.Execute(endereco, (int)pedidoCadastradoId);
-            await _createProdutoPedidoUseCase.Execute(pedidoDto.ProdutoPedidos, (int)pedidoCadastradoId, (int)estabelecimentoId);
+            int pedidoId = pedidoCadastradoId.Value;
+            int estabId = estabelecimentoId.Value;
+
+            await _createEnderecoUseCase.Execute(pedidoDto.Endereco, pedidoId);
+            await _createProdutoPedidoUseCase.Execute(pedidoDto.ProdutoPedidos, pedidoId, estabId);
 
             await _dbTransactionsHelper.CommitTransactionAsync();
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes("sua_chave_secreta_super_segura_aqui");
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[] { new Claim("id", pedidoCadastradoId.ToString()!) }),
+                Subject = new ClaimsIdentity(new[] { new Claim("id", pedidoId.ToString()) }),
                 Expires = DateTime.UtcNow.AddHours(2),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
+                SigningCredentials = new SigningCredentials(
+                    new SymmetricSecurityKey(key),
                     SecurityAlgorithms.HmacSha256Signature)
             };
+
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
-            return new Token(){token = tokenString};
+
+            return  tokenString ;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             await _dbTransactionsHelper.RollbackTransactionAsync();
-                throw new Exception(message: "Erro ao salvar!");
-            // Logar o erro aqui (ex: ILogger)
-            return null;
+            throw new Exception("Erro ao salvar pedido", ex);
         }
     }
 }

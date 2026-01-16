@@ -20,7 +20,7 @@ public class PedidoController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Token>> CreatePedido(
+    public async Task<ActionResult<string>> CreatePedido(
         [FromQuery] string estabelecimentoSlug,
         [FromBody] CreatePedidoDTO pedido)
     {
