@@ -2,6 +2,7 @@ namespace Comaagora_API.src.Application.DTOs;
 
 public class GetProdutoPedidoDTO
 {
-    public int ProdutoId { get; set; }
+    public string Produto { get; set; }
+    public decimal Preco { get; set; }
     public decimal Quantidade { get; set; }
 }

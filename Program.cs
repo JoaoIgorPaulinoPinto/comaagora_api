@@ -23,6 +23,7 @@ builder.Services.AddScoped<ICreateProdutoPedidoUseCase, CreateProdutoPedidoUseCa
 builder.Services.AddScoped<ICreateEnderecoUseCase, CreateEnderecoUseCase>();
 builder.Services.AddScoped<ICreatePedidoUseCase, CreatePedidoUseCase>();
 builder.Services.AddScoped<IGetEstabelecimentoIdUseCase, GetEstabeleicmentoIdUseCase>();
+builder.Services.AddScoped<IGetPedidosUseCase, GetPedidosUseCase>();
 
 // Repositories
 builder.Services.AddScoped<IEnderecoRepository, EnderecoRepository>();
@@ -46,7 +47,17 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     var conn = builder.Configuration.GetConnectionString("Default");
     options.UseMySql(conn, ServerVersion.AutoDetect(conn));
 });
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowMyOrigin",
+        policy => policy.WithOrigins("http://localhost:5162/", "http://localhost:3000") // Origens permitidas
+            .AllowAnyMethod() // Permite GET, POST, PUT, DELETE, etc.
+            .AllowAnyHeader() // Permite cabeçalhos como Content-Type
+            .AllowCredentials()); // Opcional: para permitir cookies/autenticação
+});
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

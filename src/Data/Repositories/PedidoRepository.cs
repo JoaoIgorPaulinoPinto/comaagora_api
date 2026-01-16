@@ -5,6 +5,7 @@ using Comaagora_API.Services.Models;
 using Comaagora_API.src.Application.DTOs;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Comaagora_API.Data.Repositories;
 
@@ -18,7 +19,7 @@ public  class PedidoRepository : IPedidoRepository
         _context = context;
     }
 
-    public async Task<int?> CreatePedido(PedidoEntity pedido)
+    public async Task<int?> CreatePedido(PedidoEntity pedido, string? token)
     {
         try
         {
@@ -37,10 +38,29 @@ public  class PedidoRepository : IPedidoRepository
     public Task<List<GetPedidoDTO>> GetPedidos(string token)
     {
         return _pedidoRepositoryImplementation.GetPedidos(token);
+    
     }
 
-    public Task<List<GetPedidoDTO>> GetPedidos(int codigoPedido)
+    public async Task<List<GetPedidoDTO>> GetPedidos(int codigoPedido)
     {
-        return _pedidoRepositoryImplementation.GetPedidos(codigoPedido);
+        return await _context.Pedidos
+            .AsNoTracking()
+            .Where(p => p.Id == codigoPedido)
+            .Select(p => new GetPedidoDTO()
+            {
+                Id = p.Id,
+                MetodoPagamento = p.MetodoPagamento.Nome,
+                NomeCliente = p.NomeCliente,
+                Observacao = p.Observacao,
+
+                ProdutoPedidos = p.ProdutoPedidos.Select(pp => new GetProdutoPedidoDTO()
+                    {
+                        Produto = pp.Produto.Nome,
+                        Preco = pp.Produto.Preco,
+                        Quantidade = pp.Quantidade
+                    }).ToList(),
+                Status = p.PedidoStatus.Nome,
+                TelefoneCliente =  p.TelefoneCliente
+            }).ToListAsync();
     }
 }

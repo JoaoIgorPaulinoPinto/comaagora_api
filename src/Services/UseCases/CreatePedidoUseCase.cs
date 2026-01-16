@@ -42,7 +42,7 @@ public class CreatePedidoUseCase : ICreatePedidoUseCase
                 throw new Exception("Estabelecimento não encontrado");
 
             var pedido = PedidoMapper.CreatePedidoDto_To_PedidoEntity(pedidoDto, estabelecimentoId.Value);
-            var pedidoCadastradoId = await _repository.CreatePedido(pedido);
+            var pedidoCadastradoId = await _repository.CreatePedido(pedido, null);
             if (pedidoCadastradoId == null)
                 throw new Exception("Erro ao criar pedido");
 
@@ -70,6 +70,57 @@ public class CreatePedidoUseCase : ICreatePedidoUseCase
             var tokenString = tokenHandler.WriteToken(token);
 
             return  tokenString ;
+        }
+        catch (Exception ex)
+        {
+            await _dbTransactionsHelper.RollbackTransactionAsync();
+            throw new Exception("Erro ao salvar pedido", ex);
+        }
+    }
+
+    public async Task<string> Execute(string estabelecimentoSlug, CreatePedidoDTO pedidoDto, string t)
+    {
+        await _dbTransactionsHelper.BeginTransactionAsync();
+
+        try
+        {
+            var estabelecimentoId = await _getEstabelecimentoIdUseCase.Execute(estabelecimentoSlug);
+            if (estabelecimentoId == null)
+                throw new Exception("Estabelecimento não encontrado");
+
+            var pedido = PedidoMapper.CreatePedidoDto_To_PedidoEntity(pedidoDto, estabelecimentoId.Value);
+            var pedidoCadastradoId = await _repository.CreatePedido(pedido, null);
+            if (pedidoCadastradoId == null)
+                throw new Exception("Erro ao criar pedido");
+
+            int pedidoId = pedidoCadastradoId.Value;
+            int estabId = estabelecimentoId.Value;
+
+            await _createEnderecoUseCase.Execute(pedidoDto.Endereco, pedidoId);
+            await _createProdutoPedidoUseCase.Execute(pedidoDto.ProdutoPedidos, pedidoId, estabId);
+
+            await _dbTransactionsHelper.CommitTransactionAsync();
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes("sua_chave_secreta_super_segura_aqui");
+
+            if (string.IsNullOrEmpty(t))
+            {
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new[] { new Claim("id", pedidoId.ToString()) }),
+                    Expires = DateTime.UtcNow.AddHours(2),
+                    SigningCredentials = new SigningCredentials(
+                        new SymmetricSecurityKey(key),
+                        SecurityAlgorithms.HmacSha256Signature)
+                };
+
+                 var token = tokenHandler.CreateToken(tokenDescriptor);
+                 var tokenString = tokenHandler.WriteToken(token);
+                return tokenString;
+            }
+            return t;
+
         }
         catch (Exception ex)
         {

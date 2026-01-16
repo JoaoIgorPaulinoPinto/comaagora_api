@@ -1,8 +1,7 @@
+using Comaagora_API.Application.Utils;
 using Comaagora_API.Services.Interfaces;
-using Comaagora_API.Services.Models;
 using Comaagora_API.src.Application.DTOs;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Comaagora_API.Controllers;
 
@@ -22,13 +21,32 @@ public class PedidoController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<string>> CreatePedido(
         [FromQuery] string estabelecimentoSlug,
-        [FromBody] CreatePedidoDTO pedido)
+        [FromBody] CreatePedidoDTO pedido,
+        [FromHeader] string? token)
     {
         try
         {
-            var resultado = await _createPedidoUseCase.Execute(estabelecimentoSlug, pedido);
-
-            return Ok(resultado);
+            var validar = new TokenValidation();
+            if (string.IsNullOrEmpty(token) || validar.TokenExpirou(token!) == true)
+            {
+                var resultado = await _createPedidoUseCase.Execute(estabelecimentoSlug, pedido);
+                if (!string.IsNullOrEmpty(resultado))
+                {
+                    Response.Cookies.Append("session_token", resultado!, new CookieOptions
+                    {
+                        HttpOnly = true, // Impede JS de ler
+                        Secure = true, // Apenas envia em HTTPS
+                        SameSite = SameSiteMode.Strict // Protege contra CSRF
+                    });
+                    return Ok(resultado);
+                }
+            }
+            var r = await _createPedidoUseCase.Execute(estabelecimentoSlug, pedido, token);
+            if (!string.IsNullOrEmpty(r))
+            {
+                return Ok(r);
+            }
+            throw new Exception("Erro interno do servidor");
         }
         catch (Exception e)
         {
@@ -37,36 +55,43 @@ public class PedidoController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<GetPedidoDTO>>> GetPedidos(
-        [FromQuery] string token,
-        [FromQuery] int pedidoCodigo
-        )
+    public async Task<ActionResult<List<GetPedidoDTO>>> GetPedidosBySessionToken(
+        [FromHeader] string token
+    )
     {
         try
         {
-            if (token != null && token != "" )
+            if (!string.IsNullOrEmpty(token))
             {
                 var resultado = await _getPedidoUseCase.Execute(token);
-                Response.Cookies.Append("session_token", token, new CookieOptions
-                {
-                    HttpOnly = true, // Impede JS de ler
-                    Secure = true, // Apenas envia em HTTPS
-                    SameSite = SameSiteMode.Strict // Protege contra CSRF
-                });
                 return Ok(resultado);
             }
-            else if(pedidoCodigo != null){
-                var resultado = await _getPedidoUseCase.Execute(pedidoCodigo);
-                return Ok(resultado);
-            }
-            else
-            {
-                throw new Exception("Erro interno do servidor");
-            }
+
+            return BadRequest("Informe token");
         }
         catch (Exception e)
         {
-            throw new Exception("Erro interno do servidor");
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpGet]
+    [Route("{id:int}")]
+    public async Task<ActionResult<List<GetPedidoDTO>>> GetPedidosByPedidoId(int id)
+    {
+        try
+        {
+            if (id != null)
+            {
+                var resultado = await _getPedidoUseCase.Execute(id);
+                return Ok(resultado);
+            }
+
+            return BadRequest("Código de pedido inválido");
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
         }
     }
 }
