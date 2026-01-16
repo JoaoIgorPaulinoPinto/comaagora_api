@@ -1,8 +1,13 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using Comaagora_API.Application.Mappers;
 using Comaagora_API.Data;
 using Comaagora_API.Data.Interfaces;
 using Comaagora_API.Services.Interfaces;
+using Comaagora_API.Services.Models;
 using Comaagora_API.src.Application.DTOs;
+using Microsoft.IdentityModel.Tokens;
 
 public class CreatePedidoUseCase : ICreatePedidoUseCase
 {
@@ -26,13 +31,12 @@ public class CreatePedidoUseCase : ICreatePedidoUseCase
         _getEstabelecimentoIdUseCase = getEstabelecimentoIdUseCase;
     }
 
-    public async Task<int?> Execute(string estabelecimentoSlug, CreatePedidoDTO pedidoDto)
+    public async Task<Token?> Execute(string estabelecimentoSlug, CreatePedidoDTO pedidoDto)
     {
         await _dbTransactionsHelper.BeginTransactionAsync();
 
         try
         {
-            // 1. Validar Estabelecimento
             var estabelecimentoId = await _getEstabelecimentoIdUseCase.Execute(estabelecimentoSlug);
             if (estabelecimentoId == null)
             {
@@ -52,15 +56,25 @@ public class CreatePedidoUseCase : ICreatePedidoUseCase
                 return null;
             }
 
-            // 3. Adicionar Endereço e Itens (IMPORTANTE: Adicionado await)
             CreateEnderecoDTO endereco = pedidoDto.Endereco;
             // Nota: Verifique se aqui não deveria ser o ID do Pedido ou ID do Usuário
             await _createEnderecoUseCase.Execute(endereco, (int)pedidoCadastradoId);
             await _createProdutoPedidoUseCase.Execute(pedidoDto.ProdutoPedidos, (int)pedidoCadastradoId, (int)estabelecimentoId);
 
-            // 4. Sucesso total
             await _dbTransactionsHelper.CommitTransactionAsync();
-            return pedido.Id; 
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes("sua_chave_secreta_super_segura_aqui");
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[] { new Claim("id", pedidoCadastradoId.ToString()!) }),
+                Expires = DateTime.UtcNow.AddHours(2),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var tokenString = tokenHandler.WriteToken(token);
+            return new Token(){token = tokenString};
         }
         catch (Exception)
         {

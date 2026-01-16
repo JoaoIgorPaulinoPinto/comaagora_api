@@ -19,14 +19,14 @@ public class CategoriaController : ControllerBase
     public async Task<ActionResult<List<GetCategoriaProdutoDTO>>> GetCategorias([FromQuery] string estabelecimentoSlug)
     {
 
-        if (estabelecimentoSlug.IsNullOrEmpty())
+        if (string.IsNullOrEmpty(estabelecimentoSlug))
         {
             return BadRequest("Establishment slug is required.");
         }
 
         var result = await _getCategoriasUseCase.Execute(estabelecimentoSlug);
         
-         if (result.IsNullOrEmpty())
+         if (result == null || result.Count <= 0)
          {
              return NotFound("Establishment slug not found.");
          }

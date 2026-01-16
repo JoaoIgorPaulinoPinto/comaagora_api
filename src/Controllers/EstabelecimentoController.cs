@@ -18,7 +18,7 @@ public class EstabelecimentoController:ControllerBase
     [HttpGet]
     public async Task<ActionResult<GetEstabelecimentoDTO>> GetEstabelecimento([FromQuery]string estabelecimentoSlug)
     {
-        if (estabelecimentoSlug.IsNullOrEmpty())
+        if (string.IsNullOrEmpty(estabelecimentoSlug))
         {   
             return BadRequest("o slug do estabelecimento é necessário");
         }
