@@ -32,12 +32,6 @@ public class PedidoController : ControllerBase
                 var resultado = await _createPedidoUseCase.Execute(estabelecimentoSlug, pedido);
                 if (!string.IsNullOrEmpty(resultado))
                 {
-                    Response.Cookies.Append("session_token", resultado!, new CookieOptions
-                    {
-                        HttpOnly = true, // Impede JS de ler
-                        Secure = true, // Apenas envia em HTTPS
-                        SameSite = SameSiteMode.Strict // Protege contra CSRF
-                    });
                     return Ok(resultado);
                 }
             }

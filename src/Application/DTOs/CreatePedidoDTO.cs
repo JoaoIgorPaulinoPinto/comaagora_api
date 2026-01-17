@@ -8,8 +8,9 @@ public class CreatePedidoDTO
     public List<CreateProdutoPedidoDTO> ProdutoPedidos { get; set; }
     public string Observacao { get; set; }
     public CreateEnderecoDTO Endereco { get; set; }
+    public string? SessionToken { get; set; }
 
-    public CreatePedidoDTO(string nomeCliente, string telefoneCliente, int metodoPagamento,  List<CreateProdutoPedidoDTO> produtoPedidos, string observacao, CreateEnderecoDTO endereco)
+    public CreatePedidoDTO(string? sessionToken, string nomeCliente, string telefoneCliente, int metodoPagamento,  List<CreateProdutoPedidoDTO> produtoPedidos, string observacao, CreateEnderecoDTO endereco)
     {
         NomeCliente = nomeCliente;
         TelefoneCliente = telefoneCliente;
@@ -17,5 +18,7 @@ public class CreatePedidoDTO
         ProdutoPedidos = produtoPedidos;
         Observacao = observacao;
         Endereco = endereco;
+
+        SessionToken = sessionToken;
     }
 }                          

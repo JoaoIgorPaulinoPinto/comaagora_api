@@ -30,6 +30,10 @@ public partial class PedidoEntity : BaseEntity
     public string TelefoneCliente { get; set; } = null!;
 
     public int PedidoStatusId { get; set; } = 1; 
+    
+    [Required]
+    [StringLength(255)]
+    public string SessionToken { get; set; } = null!;
     // --- Relacionamentos e Navegação ---
 
     [ForeignKey(nameof(EstabelecimentoId))]

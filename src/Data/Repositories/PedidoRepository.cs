@@ -19,10 +19,11 @@ public  class PedidoRepository : IPedidoRepository
         _context = context;
     }
 
-    public async Task<int?> CreatePedido(PedidoEntity pedido, string? token)
+    public async Task<int?> CreatePedido(PedidoEntity pedido, string token)
     {
         try
         {
+            pedido.SessionToken = token;
             await _context.Pedidos.AddAsync(pedido);
             await _context.SaveChangesAsync();
             return pedido.Id;
@@ -30,14 +31,31 @@ public  class PedidoRepository : IPedidoRepository
         catch (Exception e)
         {
             throw new Exception(message: "Erro ao salvar!");
-            return null;
         }
 
     }
 
-    public Task<List<GetPedidoDTO>> GetPedidos(string token)
+    public async Task<List<GetPedidoDTO>> GetPedidos(string token)
     {
-        return _pedidoRepositoryImplementation.GetPedidos(token);
+        return await _context.Pedidos
+            .AsNoTracking()
+            .Where(p => p.SessionToken == token)
+            .Select(p => new GetPedidoDTO()
+            {
+                Id = p.Id,
+                MetodoPagamento = p.MetodoPagamento.Nome,
+                NomeCliente = p.NomeCliente,
+                Observacao = p.Observacao,
+
+                ProdutoPedidos = p.ProdutoPedidos.Select(pp => new GetProdutoPedidoDTO()
+                {
+                    Produto = pp.Produto.Nome,
+                    Preco = pp.Produto.Preco,
+                    Quantidade = pp.Quantidade
+                }).ToList(),
+                Status = p.PedidoStatus.Nome,
+                TelefoneCliente = p.TelefoneCliente
+            }).ToListAsync();
     
     }
 
@@ -54,13 +72,13 @@ public  class PedidoRepository : IPedidoRepository
                 Observacao = p.Observacao,
 
                 ProdutoPedidos = p.ProdutoPedidos.Select(pp => new GetProdutoPedidoDTO()
-                    {
-                        Produto = pp.Produto.Nome,
-                        Preco = pp.Produto.Preco,
-                        Quantidade = pp.Quantidade
-                    }).ToList(),
+                {
+                    Produto = pp.Produto.Nome,
+                    Preco = pp.Produto.Preco,
+                    Quantidade = pp.Quantidade
+                }).ToList(),
                 Status = p.PedidoStatus.Nome,
-                TelefoneCliente =  p.TelefoneCliente
+                TelefoneCliente = p.TelefoneCliente
             }).ToListAsync();
     }
 }
