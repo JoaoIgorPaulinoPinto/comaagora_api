@@ -12,7 +12,6 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 // Controllers
 builder.Services.AddControllers();
 // UseCases
@@ -57,6 +56,7 @@ builder.Services.AddCors(options =>
             .AllowCredentials()); // Opcional: para permitir cookies/autenticação
 });
 var app = builder.Build();
+app.UseExceptionHandler();
 
 
 // Configure the HTTP request pipeline.
@@ -66,13 +66,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
-
-
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

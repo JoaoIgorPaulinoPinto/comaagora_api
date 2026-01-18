@@ -24,29 +24,42 @@ public class PedidoController : ControllerBase
         [FromBody] CreatePedidoDTO pedido,
         [FromHeader] string? token)
     {
+        if (string.IsNullOrEmpty(estabelecimentoSlug))
+            return BadRequest("Slug inválido");
+
+        var validar = new TokenValidation();
+        bool tokenInvalido = string.IsNullOrEmpty(token) || validar.TokenExpirou(token);
+
         try
         {
-            var validar = new TokenValidation();
-            if (string.IsNullOrEmpty(token) || validar.TokenExpirou(token!) == true)
+            string resultado;
+
+            if (tokenInvalido)
             {
-                var resultado = await _createPedidoUseCase.Execute(estabelecimentoSlug, pedido);
-                if (!string.IsNullOrEmpty(resultado))
-                {
-                    return Ok(resultado);
-                }
+                // gera novo token
+                resultado = await _createPedidoUseCase.Execute(estabelecimentoSlug, pedido);
             }
-            var r = await _createPedidoUseCase.Execute(estabelecimentoSlug, pedido, token);
-            if (!string.IsNullOrEmpty(r))
+            else
             {
-                return Ok(r);
+                // usa token existente
+                resultado = await _createPedidoUseCase.Execute(estabelecimentoSlug, pedido, token);
             }
-            throw new Exception("Erro interno do servidor");
+
+            if (string.IsNullOrEmpty(resultado))
+                return StatusCode(500, "Erro ao criar pedido");
+
+            return Ok(resultado);
         }
-        catch (Exception e)
+        catch (ArgumentException ex)
         {
-            throw new Exception("Erro interno do servidor");
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "Erro interno do servidor");
         }
     }
+
 
     [HttpGet]
     public async Task<ActionResult<List<GetPedidoDTO>>> GetPedidosBySessionToken(
