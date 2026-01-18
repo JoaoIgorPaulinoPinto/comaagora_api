@@ -32,10 +32,10 @@ jobs:
       - name: Build e Push da Imagem Docker
         uses: docker/build-push-action@v5
         with:
-          context: .
+          # Contexto agora é a pasta onde está o seu código e o Dockerfile
+          context: ./Comaagora_API
           file: ./Comaagora_API/Dockerfile
           push: true
-          # A linha abaixo corrige o erro "tag is needed"
           tags: joaoigorpaulinopinto/comaagora-api:latest
 
       - name: Deploy no Azure Web App
