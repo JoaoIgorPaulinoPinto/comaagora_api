@@ -32,8 +32,8 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           # Contexto definido como a subpasta conforme sua estrutura de arquivos
-          context: ./Comaagora_API
-          file: ./Comaagora_API/Dockerfile
+          context: .
+          file: ./Dockerfile
           push: true
           # Usando o nome completo para evitar erros de referência inválida
           tags: joaoigorpaulinopinto/comaagora-api:latest
