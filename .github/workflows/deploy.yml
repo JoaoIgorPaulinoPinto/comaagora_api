@@ -10,19 +10,29 @@ jobs:
     steps:
       - name: Checkout do Código
         uses: actions/checkout@v4
-
+        
+      - name: Listar arquivos (Debug)
+        run: ls -R
       # 1. Preparar o ambiente .NET
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
-      # 2. Restaurar e Rodar (Apontando para o projeto específico)
-      - name: Restaurar dependências
-        run: dotnet restore Comaagora_API/Comaagora_API.csproj
+      - name: Restaurar Dependências
+        # Tentativa 1: Arquivo na raiz do repositório
+        # Tentativa 2: Caso esteja dentro da pasta, o comando 'find' abaixo resolve
+        run: |
+          PROJECT_PATH=$(find . -name "Comaagora_API.csproj" | head -n 1)
+          echo "Projeto encontrado em: $PROJECT_PATH"
+          dotnet restore "$PROJECT_PATH"
 
-      - name: Compilar API
-        run: dotnet build Comaagora_API/Comaagora_API.csproj --configuration Release --no-restore
+      - name: Build e Push da Imagem Docker
+        uses: docker/build-push-action@v5
+        with:
+          context: .  # Mude para ponto se o Dockerfile estiver na raiz do repo no GitHub
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/comaagora-api:latest
 
       # 3. Login no Docker Hub
       - name: Login no Docker Hub
