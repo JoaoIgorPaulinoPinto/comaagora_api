@@ -38,11 +38,10 @@ jobs:
           file: ./Comaagora_API/Dockerfile
           push: true
           # Garante o formato: usuario/repositorio:tag
-          tags: ${{ secrets.DOCKER_USERNAME }}/comaagora-api:v1
 
       - name: Deploy no Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'comaagora-api'
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          images: '${{ secrets.DOCKER_USERNAME }}/comaagora-api:v1'
+          images: '${{ secrets.DOCKER_USERNAME }}/comaagora-api:latest'
