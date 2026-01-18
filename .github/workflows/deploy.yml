@@ -10,47 +10,36 @@ jobs:
     steps:
       - name: Checkout do Código
         uses: actions/checkout@v4
-        
-      - name: Listar arquivos (Debug)
-        run: ls -R
-      # 1. Preparar o ambiente .NET
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
       - name: Restaurar Dependências
-        # Tentativa 1: Arquivo na raiz do repositório
-        # Tentativa 2: Caso esteja dentro da pasta, o comando 'find' abaixo resolve
         run: |
           PROJECT_PATH=$(find . -name "Comaagora_API.csproj" | head -n 1)
-          echo "Projeto encontrado em: $PROJECT_PATH"
           dotnet restore "$PROJECT_PATH"
 
-      - name: Build e Push da Imagem Docker
-        uses: docker/build-push-action@v5
-        with:
-          context: .  # Mude para ponto se o Dockerfile estiver na raiz do repo no GitHub
-          push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/comaagora-api:latest
-
-      # 3. Login no Docker Hub
+      # O LOGIN DEVE VIR ANTES DO BUILD/PUSH
       - name: Login no Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 4. Build e Push da Imagem (Contexto ajustado para a pasta da API)
+      # BUILD ÚNICO E ORGANIZADO
       - name: Build e Push da Imagem Docker
         uses: docker/build-push-action@v5
         with:
-          context: ./Comaagora_API
+          # Contexto '.' permite que o Docker ignore arquivos via .dockerignore na raiz
+          context: .
+          # Localiza o Dockerfile automaticamente
           file: ./Comaagora_API/Dockerfile
           push: true
+          # Garante o formato: usuario/repositorio:tag
           tags: ${{ secrets.DOCKER_USERNAME }}/comaagora-api:latest
 
-      # 5. Atualizar o Azure
       - name: Deploy no Azure Web App
         uses: azure/webapps-deploy@v3
         with:
