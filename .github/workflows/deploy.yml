@@ -32,12 +32,11 @@ jobs:
       - name: Build e Push da Imagem Docker
         uses: docker/build-push-action@v5
         with:
-          # Contexto '.' permite que o Docker ignore arquivos via .dockerignore na raiz
           context: .
-          # Localiza o Dockerfile automaticamente
           file: ./Comaagora_API/Dockerfile
           push: true
-          # Garante o formato: usuario/repositorio:tag
+          # A linha abaixo corrige o erro "tag is needed"
+          tags: ${{ secrets.DOCKER_USERNAME }}/comaagora-api:latest
 
       - name: Deploy no Azure Web App
         uses: azure/webapps-deploy@v3
