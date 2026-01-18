@@ -36,7 +36,7 @@ jobs:
           file: ./Comaagora_API/Dockerfile
           push: true
           # A linha abaixo corrige o erro "tag is needed"
-          tags: ${{ secrets.DOCKER_USERNAME }}/comaagora-api:latest
+          tags: joaoigorpaulinopinto/comaagora-api:latest
 
       - name: Deploy no Azure Web App
         uses: azure/webapps-deploy@v3
