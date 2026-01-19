@@ -56,17 +56,35 @@ builder.Services.AddCors(options =>
             .AllowCredentials()); // Opcional: para permitir cookies/autenticação
 });
 var app = builder.Build();
-app.UseExceptionHandler();
 
+app.UseExceptionHandler("/error");
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
+
+
+// app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+app.Map("/error", appError =>
+{
+    appError.Run(async context =>
+    {
+        context.Response.StatusCode = 500;
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsync("{\"message\":\"Erro interno no servidor\"}");
+    });
+});
+
 app.Run();
+

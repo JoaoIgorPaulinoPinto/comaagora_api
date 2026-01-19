@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Comaagora_API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9616d40b3191ea465209681ce1b94449f49034bc")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0ecb6eeadb7ded4ef1ce5749a59cfd147ed5c3e0")]
 [assembly: System.Reflection.AssemblyProductAttribute("Comaagora_API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Comaagora_API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
