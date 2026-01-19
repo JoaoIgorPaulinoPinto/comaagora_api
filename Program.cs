@@ -49,11 +49,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowMyOrigin",
-        policy => policy.WithOrigins("http://localhost:5162/", "http://localhost:3000") // Origens permitidas
-            .AllowAnyMethod() // Permite GET, POST, PUT, DELETE, etc.
-            .AllowAnyHeader() // Permite cabeçalhos como Content-Type
-            .AllowCredentials()); // Opcional: para permitir cookies/autenticação
+    options.AddPolicy("AllowMyOrigin", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:3000", "http://localhost:5162")
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
 });
 var app = builder.Build();
 
@@ -65,10 +67,27 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
-
 app.UseSwagger();
 app.UseSwaggerUI();
+
+// app.UseHttpsRedirection();
+
+app.UseCors("AllowMyOrigin"); // <<<<<<<<<<<<<<<<<<<<<<
+
+app.UseAuthorization();
+app.MapControllers();
+
+app.Map("/error", appError =>
+{
+    appError.Run(async context =>
+    {
+        context.Response.StatusCode = 500;
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsync("{\"message\":\"Erro interno no servidor\"}");
+    });
+});
+
+app.Run();
 
 
 
