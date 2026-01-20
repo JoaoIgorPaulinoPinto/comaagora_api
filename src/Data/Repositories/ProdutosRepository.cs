@@ -19,7 +19,9 @@ namespace Comaagora_API.src.Data.Repositories
         {
             return await _dbContext.Produtos.AsNoTracking()
                 .Where(p => p.Estabelecimento.Slug == estabelecimentoSlug)
-                .Select(p => new GetProdutoDTO(p.Id, p.Nome,p.Preco, p.ImgUrl, "")).ToListAsync();
+                .Select(p => new GetProdutoDTO
+                    (p.Id, p.Nome,p.Preco, p.ImgUrl, p.Categoria.Nome, p.Descricao))
+                .ToListAsync();
         }
     }
 }

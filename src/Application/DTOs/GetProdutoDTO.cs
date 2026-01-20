@@ -9,14 +9,16 @@ namespace Comaagora_API.src.Application.DTOs
         public string Descricao { get; set; }
         public string ImgUrl { get; set; }
         public decimal Preco { get; set; }
+        public string Categoria { get; set; }
 
-        public GetProdutoDTO(int Id, string nome, decimal preco, string imgUrl, string descricao)
+        public GetProdutoDTO(int Id, string nome, decimal preco, string imgUrl, string Categoria, string descricao)
         {
             this.Id = Id;
             this.Nome = nome;
             this.Preco = preco;
             this.ImgUrl = imgUrl;
             this.Descricao = descricao;
+            this.Categoria = Categoria;
         }
         
     }

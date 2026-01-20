@@ -10,5 +10,5 @@ public class GetEstabelecimentoDTO
     public decimal PedidoMinimo { get; set; }
     public string Telefone { get; set; } = string.Empty;
     public string Whatsapp { get; set; } = string.Empty;
-    public GetEnderecoDTO? Endereco;
+    public GetEnderecoDTO? Endereco { get; set; }
 }

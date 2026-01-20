@@ -17,6 +17,7 @@ public class AppDbContext : DbContext
     public DbSet<EnderecoEntity> Enderecos { get; set; } = null!;
     public DbSet<StatusEntity> Status { get; set; } = null!;
     public DbSet<PedidoEntity> Pedidos { get; set; } = null!;
+    public DbSet<MetodoPagamentoEntity> MetodosPagamento { get; set; } = null!;
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

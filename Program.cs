@@ -23,6 +23,7 @@ builder.Services.AddScoped<ICreateEnderecoUseCase, CreateEnderecoUseCase>();
 builder.Services.AddScoped<ICreatePedidoUseCase, CreatePedidoUseCase>();
 builder.Services.AddScoped<IGetEstabelecimentoIdUseCase, GetEstabeleicmentoIdUseCase>();
 builder.Services.AddScoped<IGetPedidosUseCase, GetPedidosUseCase>();
+builder.Services.AddScoped<IGetMetodoPagamentoUseCase, GetMetodoPagamentoUseCase>();
 
 // Repositories
 builder.Services.AddScoped<IEnderecoRepository, EnderecoRepository>();
@@ -31,6 +32,7 @@ builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
 builder.Services.AddScoped<IProdutoCategoriaRepository, ProdutoCategoriaRepository>();
 builder.Services.AddScoped<IProdutoPedidoRepository, ProdutoPedidoRepositry>();
 builder.Services.AddScoped<IProdutosRepository, ProdutosRepository>();
+builder.Services.AddScoped<IMetodoPagamentoRepository, MetodoPagamentoRepository>();
 
 //  Helpers
 builder.Services.AddScoped<IDbTransactionHelper, DbTransactionsHelper>();

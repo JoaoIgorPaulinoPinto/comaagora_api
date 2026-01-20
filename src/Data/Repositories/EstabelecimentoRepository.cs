@@ -9,6 +9,7 @@ namespace Comaagora_API.Data.Repositories;
 public class EstabelecimentoRepository : IEstabelecimentoRepository
 {
     private readonly AppDbContext _context;
+
     public EstabelecimentoRepository(AppDbContext context)
     {
         _context = context;
