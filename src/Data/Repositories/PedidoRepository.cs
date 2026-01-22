@@ -37,26 +37,51 @@ public  class PedidoRepository : IPedidoRepository
 
     public async Task<List<GetPedidoDTO>> GetPedidos(string token)
     {
-        return await _context.Pedidos
-            .AsNoTracking()
-            .Where(p => p.SessionToken == token)
-            .Select(p => new GetPedidoDTO()
+        return await (
+            from p in _context.Pedidos.AsNoTracking()
+            join e in _context.Enderecos.AsNoTracking()
+                on p.Id equals e.Usuario into enderecos
+            from endereco in enderecos.DefaultIfEmpty()
+            where p.SessionToken == token
+            select new GetPedidoDTO
             {
                 Id = p.Id,
                 MetodoPagamento = p.MetodoPagamento.Nome,
                 NomeCliente = p.NomeCliente,
                 Observacao = p.Observacao,
-
-                ProdutoPedidos = p.ProdutoPedidos.Select(pp => new GetProdutoPedidoDTO()
-                {
-                    Produto = pp.Produto.Nome,
-                    Preco = pp.Produto.Preco,
-                    Quantidade = pp.Quantidade
-                }).ToList(),
                 Status = p.PedidoStatus.Nome,
-                TelefoneCliente = p.TelefoneCliente
-            }).ToListAsync();
-    
+                TelefoneCliente = p.TelefoneCliente,
+
+                ProdutoPedidos = p.ProdutoPedidos
+                    .Select(pp => new GetProdutoPedidoDTO
+                    {
+                        Produto = pp.Produto.Nome,
+                        Preco = pp.Produto.Preco,
+                        Quantidade = pp.Quantidade
+                    })
+                    .ToList(),
+
+                Endereco = endereco == null
+                    ? null
+                    : new GetEnderecoDTO
+                    {
+                        Uf = endereco.UfEntity.Nome,
+                        Cidade = endereco.CidadeEntity.Nome,
+                        Bairro = endereco.Bairro,
+                        Cep = endereco.Cep,
+                        Complemento = endereco.Complemento,
+                        Numero = endereco.Numero,
+                        Rua = endereco.Rua,
+                    },
+
+                TaxaEntrega = p.Estabelecimento.TaxaEntrega,
+
+                ValorTotal =
+                    p.ProdutoPedidos.Sum(pp =>
+                        (pp.Produto.Preco) * pp.Quantidade
+                    )
+            }
+        ).ToListAsync();
     }
 
     public async Task<List<GetPedidoDTO>> GetPedidos(int codigoPedido)
