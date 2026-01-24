@@ -24,6 +24,8 @@ builder.Services.AddScoped<ICreatePedidoUseCase, CreatePedidoUseCase>();
 builder.Services.AddScoped<IGetEstabelecimentoIdUseCase, GetEstabeleicmentoIdUseCase>();
 builder.Services.AddScoped<IGetPedidosUseCase, GetPedidosUseCase>();
 builder.Services.AddScoped<IGetMetodoPagamentoUseCase, GetMetodoPagamentoUseCase>();
+builder.Services.AddScoped<IGetEstadosUseCase, GetEstadosUseCase>();
+builder.Services.AddScoped<IGetCidadesUseCase, GetCidadesUseCase>();
 
 // Repositories
 builder.Services.AddScoped<IEnderecoRepository, EnderecoRepository>();
@@ -33,6 +35,8 @@ builder.Services.AddScoped<IProdutoCategoriaRepository, ProdutoCategoriaReposito
 builder.Services.AddScoped<IProdutoPedidoRepository, ProdutoPedidoRepositry>();
 builder.Services.AddScoped<IProdutosRepository, ProdutosRepository>();
 builder.Services.AddScoped<IMetodoPagamentoRepository, MetodoPagamentoRepository>();
+builder.Services.AddScoped<IEstadosRepository, EstadosRepository>();
+builder.Services.AddScoped<ICidadesRepository, CidadesRepository>();
 
 //  Helpers
 builder.Services.AddScoped<IDbTransactionHelper, DbTransactionsHelper>();

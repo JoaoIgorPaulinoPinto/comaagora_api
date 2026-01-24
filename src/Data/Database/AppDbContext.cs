@@ -15,6 +15,8 @@ public class AppDbContext : DbContext
     public DbSet<ProdutoCategoriaEntity> ProdutoCategorias { get; set; } = null!;
     public DbSet<EstabelecimentosEntity> Estabelecimentos { get; set; } = null!;
     public DbSet<EnderecoEntity> Enderecos { get; set; } = null!;
+    public DbSet<EstadoEnity> Estados { get; set; } = null!;
+    public DbSet<MunicipioEntity> Cidades { get; set; } = null!;
     public DbSet<StatusEntity> Status { get; set; } = null!;
     public DbSet<PedidoEntity> Pedidos { get; set; } = null!;
     public DbSet<MetodoPagamentoEntity> MetodosPagamento { get; set; } = null!;

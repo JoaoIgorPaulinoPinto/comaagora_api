@@ -20,6 +20,5 @@ public partial class MunicipioEntity
     [Required]
     [StringLength(2)]
     public string Uf { get; set; } = null!;
-
     public virtual ICollection<EnderecoEntity> Enderecos { get; set; } = new List<EnderecoEntity>();
 }
