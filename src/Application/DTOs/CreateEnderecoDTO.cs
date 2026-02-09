@@ -2,9 +2,9 @@ namespace Comaagora_API.src.Application.DTOs;
 
 public class CreateEnderecoDTO
 {
-    public int UfId { get;  }
+    public int UfId { get; } 
     public int CidadeId { get;  }
-    public string Bairro { get;  }
+    public string Bairro { get;  }  
     public string Numero { get;  }
     public string Cep { get;  }
     public string Rua { get;  }

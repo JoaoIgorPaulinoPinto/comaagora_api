@@ -5,11 +5,11 @@ using Comaagora_API.src.Application.DTOs;
 
 namespace Comaagora_API.Data.Repositories;
 
-public class ProdutoPedidoRepositry :IProdutoPedidoRepository
+public class ProdutoPedidoRepository :IProdutoPedidoRepository
 {
     private readonly AppDbContext _context;
 
-    public ProdutoPedidoRepositry(AppDbContext context)
+    public ProdutoPedidoRepository(AppDbContext context)
     {
         _context = context;
     }

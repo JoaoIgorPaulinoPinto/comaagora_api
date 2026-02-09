@@ -32,7 +32,7 @@ builder.Services.AddScoped<IEnderecoRepository, EnderecoRepository>();
 builder.Services.AddScoped<IEstabelecimentoRepository, EstabelecimentoRepository>();
 builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
 builder.Services.AddScoped<IProdutoCategoriaRepository, ProdutoCategoriaRepository>();
-builder.Services.AddScoped<IProdutoPedidoRepository, ProdutoPedidoRepositry>();
+builder.Services.AddScoped<IProdutoPedidoRepository, ProdutoPedidoRepository>();
 builder.Services.AddScoped<IProdutosRepository, ProdutosRepository>();
 builder.Services.AddScoped<IMetodoPagamentoRepository, MetodoPagamentoRepository>();
 builder.Services.AddScoped<IEstadosRepository, EstadosRepository>();
@@ -65,21 +65,17 @@ builder.Services.AddCors(options =>
 });
 var app = builder.Build();
 
-app.UseExceptionHandler("/error");
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseSwagger();
-app.UseSwaggerUI();
+app.UseCors("AllowMyOrigin");
+app.UseExceptionHandler("/error");
+app.UseHttpsRedirection();
 
-// app.UseHttpsRedirection();
-
-app.UseCors("AllowMyOrigin"); // <<<<<<<<<<<<<<<<<<<<<<
-
+//TODAS ROTAS SÃO PUBLICAS
 app.UseAuthorization();
 app.MapControllers();
 
@@ -92,24 +88,4 @@ app.Map("/error", appError =>
         await context.Response.WriteAsync("{\"message\":\"Erro interno no servidor\"}");
     });
 });
-
 app.Run();
-
-
-
-// app.UseHttpsRedirection();
-app.UseAuthorization();
-app.MapControllers();
-
-app.Map("/error", appError =>
-{
-    appError.Run(async context =>
-    {
-        context.Response.StatusCode = 500;
-        context.Response.ContentType = "application/json";
-        await context.Response.WriteAsync("{\"message\":\"Erro interno no servidor\"}");
-    });
-});
-
-app.Run();
-

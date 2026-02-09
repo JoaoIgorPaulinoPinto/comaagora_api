@@ -1,18 +1,19 @@
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Text;
 using Comaagora_API.Application.Mappers;
 using Comaagora_API.Data;
 using Comaagora_API.Data.Interfaces;
 using Comaagora_API.Services.Interfaces;
-using Comaagora_API.Services.Models;
 using Comaagora_API.src.Application.DTOs;
 using Microsoft.IdentityModel.Tokens;
+
+namespace Comaagora_API.Services.UseCases
+{
 
 public class CreatePedidoUseCase : ICreatePedidoUseCase
 {
     private readonly IConfiguration _configuration;
-    private readonly IDbTransactionHelper _dbTransactionsHelper; // Usar Interface
+    private readonly IDbTransactionHelper _dbTransactionsHelper;
     private readonly IPedidoRepository _repository;
     private readonly IGetEstabelecimentoIdUseCase _getEstabelecimentoIdUseCase;
     private readonly ICreateEnderecoUseCase _createEnderecoUseCase;
@@ -20,7 +21,7 @@ public class CreatePedidoUseCase : ICreatePedidoUseCase
 
     public CreatePedidoUseCase(IConfiguration configuration,
         ICreateProdutoPedidoUseCase createProdutoPedidoUseCase, 
-        IDbTransactionHelper transactionsHelper, // Interface aqui
+        IDbTransactionHelper transactionsHelper, 
         ICreateEnderecoUseCase createEnderecoUseCase, 
         IGetEstabelecimentoIdUseCase getEstabelecimentoIdUseCase, 
         IPedidoRepository repository)
@@ -33,7 +34,7 @@ public class CreatePedidoUseCase : ICreatePedidoUseCase
         _getEstabelecimentoIdUseCase = getEstabelecimentoIdUseCase;
     }
 
-    public async Task<string> Execute(string estabelecimentoSlug, CreatePedidoDTO pedidoDto)
+    public async Task<string?> Execute(string estabelecimentoSlug, CreatePedidoDTO pedidoDto)
     {
         await _dbTransactionsHelper.BeginTransactionAsync();
 
@@ -42,8 +43,8 @@ public class CreatePedidoUseCase : ICreatePedidoUseCase
             var estabelecimentoId = await _getEstabelecimentoIdUseCase.Execute(estabelecimentoSlug);
             if (estabelecimentoId == null)
                 throw new Exception("Estabelecimento não encontrado");
-            var tokenHandler = new JwtSecurityTokenHandler();
             
+            //token usado apenas para sessões, e pegar os ultimos pedidos por sessão   NÃO PARA SEGURANÇA
             var tokenString = CriaToken();
 
 
@@ -70,7 +71,7 @@ public class CreatePedidoUseCase : ICreatePedidoUseCase
         }
     }
 
-    public async Task<string> Execute(string estabelecimentoSlug, CreatePedidoDTO pedidoDto, string t)
+    public async Task<string?> Execute(string estabelecimentoSlug, CreatePedidoDTO pedidoDto, string t)
     {
         await _dbTransactionsHelper.BeginTransactionAsync();
 
@@ -143,4 +144,6 @@ public class CreatePedidoUseCase : ICreatePedidoUseCase
         
         return tokenString;
     }
+}
+
 }

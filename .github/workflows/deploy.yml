@@ -31,7 +31,7 @@ jobs:
       - name: Build e Push da Imagem Docker
         uses: docker/build-push-action@v5
         with:
-          # Contexto definido como a subpasta conforme sua estrutura de arquivos
+          # Contexto definido como a subpasta conforme sua estrutura de avrquivos
           context: .
           file: ./Dockerfile
           push: true
