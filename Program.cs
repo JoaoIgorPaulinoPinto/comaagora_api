@@ -73,7 +73,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowMyOrigin");
 app.UseExceptionHandler("/error");
-app.UseHttpsRedirection();
 
 //TODAS ROTAS SÃO PUBLICAS
 app.UseAuthorization();
