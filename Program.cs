@@ -1,90 +1,76 @@
-using Comaagora_API.Data;
-using Comaagora_API.Data.Database;
-using Comaagora_API.Data.Interfaces;
-using Comaagora_API.Data.Repositories;
-using Comaagora_API.Services.Interfaces;
-using Comaagora_API.Services.UseCases;
-using Comaagora_API.src.Data.Interfaces;
-using Comaagora_API.src.Data.Repositories;
-using Comaagora_API.src.Services.Interfaces;
-using Comaagora_API.src.Services.UseCases;
+using comaagora.Data;
+using comaagora.Repositories;
+using comaagora.Services.Categoria;
+using comaagora.Services.Endereco;
+using comaagora.Services.Estabelecimento;
+using comaagora.Services.Localizacao;
+using comaagora.Services.MetodoPagamento;
+using comaagora.Services.Pedido;
+using comaagora.Services.Produto;
+using comaagora.Services.ProdutoPedido;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Controllers
+// --- CONFIGURAÇÃO DE PORTA PARA O RENDER ---
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
 builder.Services.AddControllers();
-// UseCases
-builder.Services.AddScoped<IGetProdutosUseCase, GetProdutosUseCase>();
-builder.Services.AddScoped<IGetEstabelecimentoUseCase, GetEstabelecimentoUseCase>();
-builder.Services.AddScoped<IGetCategoriasUseCase, GetCategoriasUseCase>();
-builder.Services.AddScoped<ICreateProdutoPedidoUseCase, CreateProdutoPedidoUseCase>();
-builder.Services.AddScoped<ICreateEnderecoUseCase, CreateEnderecoUseCase>();
-builder.Services.AddScoped<ICreatePedidoUseCase, CreatePedidoUseCase>();
-builder.Services.AddScoped<IGetEstabelecimentoIdUseCase, GetEstabeleicmentoIdUseCase>();
-builder.Services.AddScoped<IGetPedidosUseCase, GetPedidosUseCase>();
-builder.Services.AddScoped<IGetMetodoPagamentoUseCase, GetMetodoPagamentoUseCase>();
-builder.Services.AddScoped<IGetEstadosUseCase, GetEstadosUseCase>();
-builder.Services.AddScoped<IGetCidadesUseCase, GetCidadesUseCase>();
-
-// Repositories
-builder.Services.AddScoped<IEnderecoRepository, EnderecoRepository>();
-builder.Services.AddScoped<IEstabelecimentoRepository, EstabelecimentoRepository>();
-builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
-builder.Services.AddScoped<IProdutoCategoriaRepository, ProdutoCategoriaRepository>();
-builder.Services.AddScoped<IProdutoPedidoRepository, ProdutoPedidoRepository>();
-builder.Services.AddScoped<IProdutosRepository, ProdutosRepository>();
-builder.Services.AddScoped<IMetodoPagamentoRepository, MetodoPagamentoRepository>();
-builder.Services.AddScoped<IEstadosRepository, EstadosRepository>();
-builder.Services.AddScoped<ICidadesRepository, CidadesRepository>();
-
-//  Helpers
-builder.Services.AddScoped<IDbTransactionHelper, DbTransactionsHelper>();
-
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
+// --- BANCO DE PADADOS ---
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    var conn = builder.Configuration.GetConnectionString("Default");
+    var conn = builder.Configuration.GetConnectionString("DefaultConnection");
     options.UseMySql(conn, ServerVersion.AutoDetect(conn));
 });
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowMyOrigin", policy =>
-    {
-        policy
-            .WithOrigins("http://localhost:3000", "http://localhost:5162")
-            .AllowAnyMethod()
-            .AllowAnyHeader();
-    });
-});
+// --- DEPENDÊNCIAS (SERVICES) ---
+builder.Services.AddScoped<IEnderecoService, EnderecoService>();
+builder.Services.AddScoped<IProdutoPedidoService, ProdutoPedidoService>();
+builder.Services.AddScoped<IPedidoService, PedidoService>();
+builder.Services.AddScoped<IProdutoService, ProdutoService>();
+builder.Services.AddScoped<IEstabelecimentoService, EstabelecimentoService>();
+builder.Services.AddScoped<IMetodoPagamentoService, MetodoPagamentoService>();
+builder.Services.AddScoped<ICategoriaService, CategoriaService>();
+builder.Services.AddScoped<ILocalizacaoService, LocalizacaoService>();
+
+// --- DEPENDÊNCIAS (REPOSITORIES) ---
+builder.Services.AddScoped<PedidoRepository>();
+builder.Services.AddScoped<MetodoPagamentoRepository>();
+builder.Services.AddScoped<CategoriaRepository>();
+builder.Services.AddScoped<EstabelecimentoRepository>();
+builder.Services.AddScoped<ProdutoRepository>();
+builder.Services.AddScoped<EnderecoRepository>();
+builder.Services.AddScoped<LocalizacaoRepository>();
+
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+// --- PIPELINE DE REQUISIÇÕES (MIDDLEWARES) ---
+
+// Swagger habilitado para todos os ambientes no Render para facilitar testes
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "ComaAgora API v1");
+    // Se quiser que o Swagger seja a página inicial, deixe a RoutePrefix vazia:
+    // c.RoutePrefix = string.Empty; 
+});
 
-app.UseCors("AllowMyOrigin");
-app.UseExceptionHandler("/error");
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 
-//TODAS ROTAS SÃO PUBLICAS
-app.UseAuthorization();
+// IMPORTANTE: UseHttpsRedirection é desativado no Render pois o Proxy deles já cuida disso.
+// app.UseHttpsRedirection(); 
+
 app.MapControllers();
 
-app.Map("/error", appError =>
-{
-    appError.Run(async context =>
-    {
-        context.Response.StatusCode = 500;
-        context.Response.ContentType = "application/json";
-        await context.Response.WriteAsync("{\"message\":\"Erro interno no servidor\"}");
-    });
-});
+// Rota raiz para confirmar que a API está de pé
+app.MapGet("/", () => "ComaAgora API está online e rodando!");
+
 app.Run();
